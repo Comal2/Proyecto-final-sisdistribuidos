@@ -1,0 +1,14 @@
+services:
+  server:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - GROUP_NAME=${GROUP_NAME}
+      - GROUP_URL=${GROUP_URL}
+      - CENTRAL_URL=${CENTRAL_URL}
+    volumes:
+      - db_data:/app/data
+
+volumes:
+  db_data:
