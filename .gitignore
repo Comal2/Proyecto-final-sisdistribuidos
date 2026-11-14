@@ -1,0 +1,30 @@
+# Claude Code
+.claude/
+
+# Carpeta de referencia local
+ProyectoFinal REFERENCIA/
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+venv/
+env/
+*.egg-info/
+
+# Variables de entorno
+.env
+.env.*
+
+# Base de datos local
+*.db
+*.sqlite
+*.sqlite3
+
+# Docker
+.dockerignore
+
+# OS
+.DS_Store
+Thumbs.db
