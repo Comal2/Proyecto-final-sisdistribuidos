@@ -1,0 +1,99 @@
+### Chat Distribuido SAA — Pruebas de endpoints
+### Requiere extensión REST Client (Huachao Mao) en VS Code
+### El servidor debe estar corriendo: docker compose up -d
+
+@server = http://localhost:8000
+@grupo  = SAA
+
+# ─────────────────────────────────────────────
+# FEDERACIÓN (endpoints que llama el servidor central)
+# ─────────────────────────────────────────────
+
+### 1. Health — estado del servidor y reloj Lamport
+GET {{server}}/fed/health
+
+###
+
+### 2. Recibir mensaje de otro grupo (simula al servidor central)
+POST {{server}}/fed/messages
+Content-Type: application/json
+
+{
+  "id": "22222222-2222-2222-2222-222222222222",
+  "from": "carlos@G5",
+  "origin": "G5",
+  "lamport": 10,
+  "sent_at": "2026-11-15T23:00:00Z",
+  "body": "hola desde el grupo 5"
+}
+
+# ─────────────────────────────────────────────
+# CLIENTES (endpoints que usa el cliente del grupo)
+# ─────────────────────────────────────────────
+
+### 3. Crear usuario
+POST {{server}}/users
+Content-Type: application/json
+
+{
+  "username": "angel"
+}
+
+###
+
+### 4. Enviar mensaje a #general
+POST {{server}}/messages
+Content-Type: application/json
+
+{
+  "from_user": "angel@{{grupo}}",
+  "body": "hola desde SAA"
+}
+
+###
+
+### 5. Leer historial completo (desde lamport 0)
+GET {{server}}/messages?since=0
+
+###
+
+### 6. Leer solo mensajes nuevos (cambiar el número por el último lamport visto)
+GET {{server}}/messages?since=5
+
+# ─────────────────────────────────────────────
+# DEDUPLICACIÓN — enviar el mismo ID dos veces
+# El segundo debe responder ok igualmente (idempotente)
+# ─────────────────────────────────────────────
+
+### 7. Primer envío
+POST {{server}}/fed/messages
+Content-Type: application/json
+
+{
+  "id": "33333333-3333-3333-3333-333333333333",
+  "from": "test@G9",
+  "origin": "G9",
+  "lamport": 20,
+  "sent_at": "2026-11-15T23:05:00Z",
+  "body": "mensaje de prueba deduplicacion"
+}
+
+###
+
+### 8. Mismo ID de nuevo — no debe duplicarse en el historial
+POST {{server}}/fed/messages
+Content-Type: application/json
+
+{
+  "id": "33333333-3333-3333-3333-333333333333",
+  "from": "test@G9",
+  "origin": "G9",
+  "lamport": 20,
+  "sent_at": "2026-11-15T23:05:00Z",
+  "body": "mensaje de prueba deduplicacion"
+}
+
+###
+
+### 9. Verificar que el mensaje 33333333 aparece solo una vez
+GET {{server}}/messages?since=0
