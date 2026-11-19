@@ -4,6 +4,9 @@
 # Carpeta de referencia local
 ProyectoFinal REFERENCIA/
 
+# Enunciado del profesor (no es parte del entregable)
+proyecto_final_v2_estudiantes.pdf
+
 # Python
 __pycache__/
 *.py[cod]
